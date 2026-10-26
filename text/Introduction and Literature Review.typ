@@ -3,6 +3,7 @@
 ]
 #let student-name = "Dmitrii Prosvirkin"
 #let supervisor-name = "Eugene Zouev"
+#let thesis-year = 2026
 
 #set document(
   title: thesis-title,
@@ -19,7 +20,6 @@
   lang: "en",
 )
 #set heading(numbering: "1.1")
-#set par(justify: true, leading: 0.65em)
 #show link: underline
 
 #let cite(num) = {
@@ -28,16 +28,112 @@
   link(label(key))[#text]
 }
 
+#let title-role(ru, en) = box(width: 100%)[
+  #set par(justify: false)
+  #text(size: 10.5pt)[#ru \ #en]
+]
+
+#let title-signature-box = block(
+  fill: luma(235),
+  width: 100%,
+  height: 3.75em,
+  radius: 2pt,
+  inset: (x: 8pt, bottom: 5pt, top: 6pt),
+)[
+  #v(2em)
+  #align(center)[#text(size: 9pt)[подпись / signature]]
+]
+
+#set page(numbering: none)
+#set par(justify: false)
+
 #align(center)[
-  #text(size: 17pt, weight: "bold")[#thesis-title]
+  #text(size: 11pt)[
+    Автономная некоммерческая организация высшего образования \
+    «Университет Иннополис»
+  ]
+
+  #v(1.8em)
+
+  #text(size: 12pt, weight: "bold")[
+    ВЫПУСКНАЯ КВАЛИФИКАЦИОННАЯ РАБОТА \
+    (БАКАЛАВРСКАЯ РАБОТА)
+  ]
+  #v(0.35em)
+  #text(size: 11pt)[
+    по направлению подготовки \
+    09.03.01 — «Информатика и вычислительная техника»
+  ]
+
   #v(1.2em)
-  #text(size: 12pt)[
-    #student-name \
-    Supervisor: #supervisor-name
+
+  #text(size: 12pt, weight: "bold")[
+    GRADUATION THESIS \
+    (BACHELOR’S GRADUATION THESIS)
+  ]
+  #v(0.35em)
+  #text(size: 11pt)[
+    Field of Study \
+    09.03.01 — «Computer Science»
+  ]
+
+  #v(1.2em)
+
+  #text(size: 11pt)[
+    Направленность (профиль) образовательной программы \
+    «Информатика и вычислительная техника» \
+    Area of Specialization / Academic Program Title: \
+    «Computer Science»
   ]
 ]
 
-#v(2.5em)
+#v(1.4em)
+
+#text(size: 11pt)[Тема / Topic]
+#v(0.35em)
+#block(
+  fill: luma(235),
+  width: 100%,
+  inset: 12pt,
+  radius: 2pt,
+)[
+  #align(center)[#text(size: 11pt, weight: "bold")[#thesis-title]]
+]
+
+#v(1.6em)
+
+#grid(
+  columns: (2.15fr, 1.35fr, 1.35fr),
+  column-gutter: 12pt,
+  row-gutter: 1.15em,
+  align: horizon,
+  title-role([Работу выполнил /], [Thesis is executed by]),
+  text(size: 11pt)[#student-name],
+  title-signature-box,
+  title-role(
+    [Руководитель выпускной \
+    квалификационной работы /],
+    [Supervisor of Graduation Thesis],
+  ),
+  text(size: 11pt)[#supervisor-name],
+  title-signature-box,
+  title-role([Консультанты /], [Consultants]),
+  [],
+  title-signature-box,
+)
+
+#v(1fr)
+
+#align(center)[
+  #text(size: 11pt)[
+    Иннополис, Innopolis, #thesis-year
+  ]
+]
+
+#pagebreak()
+#set page(numbering: "1")
+#counter(page).update(1)
+#set par(justify: true, leading: 0.65em)
 
 #outline(
   title: text(size: 14pt, weight: "bold")[Table of Contents],
