@@ -1,0 +1,41 @@
+# OS / IDE
+.DS_Store
+.idea/
+*.iml
+.vscode/
+
+# Java / Kotlin
+*.class
+.gradle/
+build/
+out/
+.jdk/
+
+# Scala / sbt
+target/
+.bsp/
+.bloop/
+.metals/
+metals.sbt
+
+# Benchmark outputs
+results/
+*.csv
+*.log
+
+# local
+AGENTS.md
+.local/
+testing/
+
+# LaTeX build artifacts
+text/latex/thesis/thesis.aux
+text/latex/thesis/thesis.log
+text/latex/thesis/thesis.out
+text/latex/thesis/thesis.toc
+text/latex/thesis/chapters/*.aux
+text/latex/thesis/thesis.bbl
+text/latex/thesis/thesis.bcf
+text/latex/thesis/thesis.blg
+text/latex/thesis/thesis.run.xml
+text/latex/thesis/thesis.pdf

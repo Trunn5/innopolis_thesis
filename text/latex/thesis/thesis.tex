@@ -1,0 +1,121 @@
+\documentclass[oneside,final,14pt,a4paper]{extreport}
+
+\usepackage{tempora} % Times New Roman alike font
+
+\usepackage{vmargin}
+\setpapersize{A4}
+\setmarginsrb{2.5cm}{2.2cm}{2.2cm}{2.2cm}{0pt}{10mm}{0pt}{13mm}
+\usepackage{setspace}
+\setstretch{1.5}
+\usepackage{indentfirst}
+\parindent=1.25cm
+
+%%%%% ADDED TO SUPPORT TT BOLD FACES %%%%
+\DeclareFontShape{OT1}{cmtt}{bx}{n}{<5><6><7><8><9><10><10.95><12><14.4><17.28><20.74><24.88>cmttb10}{}
+\renewcommand{\ttdefault}{pcr}
+%%%%% END %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{atbegshi,picture}
+\usepackage[T1,T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+
+\usepackage[english]{babel}
+\usepackage[backend=biber,style=ieee,autocite=inline]{biblatex}
+\addbibresource{ref.bib}
+\DefineBibliographyStrings{english}{bibliography = {References}}
+\usepackage{amsmath,amsfonts}
+\usepackage{url}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=black, citecolor=black, urlcolor=black}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage{array}
+\usepackage{calc}
+\usepackage[table]{xcolor}
+
+\definecolor{titlefill}{gray}{0.92}
+\definecolor{titleborderdark}{gray}{0.2}
+\newlength{\titlesignatureboxw}
+\newlength{\titlerolecolw}
+\newlength{\titlesignnamecolw}
+\setlength{\titlesignatureboxw}{0.21\textwidth}
+\setlength{\titlerolecolw}{0.31\textwidth}
+\newlength{\titletopicboxh}
+\setlength{\titletopicboxh}{3.25\baselineskip}
+\newcommand{\titletopiclabel}{%
+  \begin{minipage}[c][\titletopicboxh][c]{\widthof{Topic}}%
+    \raggedright
+    Тема\\
+    /\\
+    Topic%
+  \end{minipage}%
+}
+\newcommand{\titletopicbox}[1]{%
+  \fcolorbox{black}{titlefill}{%
+    \begin{minipage}[c][\titletopicboxh][c]{%
+      \dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}%
+      \centering\bfseries\small #1%
+    \end{minipage}}%
+}
+\newcommand{\titlenamebox}[1]{%
+  \noindent\fcolorbox{black}{titlefill}{%
+    \parbox[c][3.6em]{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}{%
+      \vfill%
+      \begin{center}\normalsize #1\end{center}%
+      \vfill%
+    }}%
+}
+\newcommand{\titlesignaturebox}{%
+  \fcolorbox{black}{titlefill}{%
+    \parbox[c][3.6em]{\dimexpr\titlesignatureboxw-2\fboxsep-2\fboxrule\relax}{%
+      \vspace{2.45em}%
+      \begin{center}{\footnotesize\color{titleborderdark} подпись / signature}\end{center}%
+    }}%
+}
+\newcommand{\titlerole}[2]{%
+  \begin{minipage}[c]{\linewidth}%
+    \normalsize #1\\#2%
+  \end{minipage}%
+}
+\newcommand{\titlesignrow}[3]{%
+  \setlength{\titlesignnamecolw}{%
+    \dimexpr\textwidth-\titlerolecolw-1.75em-0.65em-\titlesignatureboxw\relax}%
+  \noindent
+  \begin{tabular}{@{}>{\raggedright\arraybackslash}m{\titlerolecolw}@{\hspace{1.75em}}m{\titlesignnamecolw}@{\hspace{0.65em}}m{\titlesignatureboxw}@{}}%
+    \titlerole{#1}{#2} &
+    \titlenamebox{#3} &
+    \titlesignaturebox \\
+  \end{tabular}%
+}
+
+\setlength{\headheight}{32.0976pt}
+\setlength{\parindent}{2em}
+
+\pagestyle{fancyplain}
+\renewcommand{\chaptermark}[1]{\markboth{\chaptername~\thechapter~--~#1}{}}
+\renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}}
+\rhead[\fancyplain{}{\bf\leftmark}]{\fancyplain{}{\bf\thepage}}
+\lhead[\fancyplain{}{\bf\thepage}]{\fancyplain{}{\bf\rightmark}}
+\cfoot{}
+
+\begin{document}
+
+\input{chapters/titlepage}
+\tableofcontents
+\newpage
+\setcounter{page}{1}
+
+\include{chapters/chapter1}
+\include{chapters/chapter2}
+\printbibliography[heading=bibintoc,title={References}]
+
+% Uncomment as the thesis grows:
+% \include{chapters/abstract}
+% \listoftables
+% \listoffigures
+% \include{chapters/chapter3}
+% \include{chapters/chapter4}
+% \include{chapters/chapter5}
+% \include{chapters/chapter6}
+% \include{chapters/appex}
+\end{document}

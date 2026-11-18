@@ -1,0 +1,73 @@
+\chapter{Introduction}
+\label{chap:intro}
+
+\section{Context}
+
+A JVM backend serves many requests at once. A request may spend time on the CPU, blocked on another service, or both. The concurrency model is how that work is placed on threads. The model determines which resource is exhausted first --- the thread pool, the cap on simultaneous calls to a dependency, or memory (every request in flight holds a stack or a continuation) --- and where in the service an explicit limit has to be set.
+
+\section{Problem}
+
+Public comparisons usually take two or three of these models at a time and report throughput, latency, and memory for one or two workloads. They also mix two factors. The first is the scheduler: a bounded pool of platform threads, or virtual threads that leave the carrier thread while blocked. The second is the abstraction: blocking code, Scala \texttt{Future}, ZIO fibers, or Kotlin coroutines. A single throughput number from such a mix does not say which resource saturated, and it does not say where the limit should be configured. For Java threads the placement has been studied: Oracle’s guide for virtual threads recommends a \texttt{Semaphore} around the call to a capped service, and two public experiments, a Swift database test and a Spring Boot load-shedding test, measured where the limit works best. For \texttt{Future}, ZIO, and Kotlin coroutines nothing comparable was found (Chapter 2).
+
+\section{Object and subject}
+
+The object of the study is a JVM backend that processes requests in parallel. The subject is how five concurrency models differ on one property list when the request logic is the same.
+
+The models are:
+
+\begin{enumerate}
+\item A bounded pool of platform threads, with blocking code.
+\item Virtual threads (Java 21) and the same blocking code.
+\item Scala \texttt{Future} on an \texttt{ExecutionContext} backed by a thread pool.
+\item ZIO fibers on a worker pool.
+\item Kotlin coroutines on a dispatcher backed by a thread pool.
+\end{enumerate}
+
+Every experiment uses the same logical request: a CPU loop; a wait on an in-process stub of an external service; a request with several outbound calls; cancellation on timeout. The last two parts belong to the composite scenario. The stub has a fixed delay, a cap on simultaneous calls, and a count of occupied slots. The study compares models, not business algorithms.
+
+In all five models the call to the stub blocks. Models 1, 3, 4, and 5 run on a fixed pool of platform threads, so they differ only in the abstraction; model 2 differs in the scheduler. Implementation details are given in the benchmark chapter.
+
+\section{Properties}
+
+The models are compared on five groups of properties.
+
+\begin{itemize}
+\item \textbf{Resources and limits.} Which resource runs out first: the thread pool, the external cap, or the runtime’s worker pool. How many OS threads are used. How much overhead remains at the same load, measured as the OS thread count and heap use. How many requests can stay in flight before latency breaks.
+\item \textbf{Behavior under load.} Throughput. Latency at the 95th and 99th percentiles. Overload when offered concurrency exceeds a limit: the queue grows, and new work waits.
+\item \textbf{Cancellation.} Whether cancel reaches the parallel outbound calls. Whether an occupied slot is released. Whether child tasks are tied to the parent request, or must be cancelled by hand.
+\item \textbf{Waiting.} A blocking wait on a pool thread, against an explicit non-blocking wait (a variant outside the main runs). The risk of occupying a pool that was built for asynchronous tasks.
+\item \textbf{Errors and engineering.} What happens when one of several parallel calls fails. Where the parallelism limit is set. What it takes to write the same request in all five models, compared as lines of code and the constructs used; this row is qualitative.
+\end{itemize}
+
+The first three groups are measured. The last two are assessed from the code and the literature.
+
+\section{Goal and question}
+
+The goal is to compare the five models on this list and to show where parallelism should be bounded and how cancellation behaves.
+
+The tasks are:
+
+\begin{enumerate}
+\item Fix the property list and describe the five models.
+\item Build a benchmark with a stub that controls delay, the concurrency cap, and occupied slots.
+\item Run CPU-only load, I/O below the stub cap, I/O above the stub cap, a composite request, and cancellation.
+\item Identify, for each model, the resource that is exhausted first when the pool size and the stub cap are varied separately.
+\item Produce a model-by-property table, recommendations, and the scope of those recommendations.
+\end{enumerate}
+
+The research question is: how does the choice of concurrency model change the limits of a JVM backend, and where in the architecture must a bound on parallel work be set?
+
+The working hypothesis is that models 1, 3, 4, and 5 are limited by the pool size, because a blocking call holds a pool thread, and so behave alike up to their own overhead. A virtual thread releases its carrier while it waits, so it should reach the cap of the stub. If \texttt{Future}, ZIO, and Kotlin wait without blocking, they should behave like virtual threads; this variant is checked separately. The differences between the models are then expected mainly in overhead and in cancellation.
+
+\section{Result and scope}
+
+The result is the property list, the measurements, the table, and the recommendations.
+
+The work stays on one JVM. The dependency is a stub, not a network service. The load is closed-loop: a fixed number of workers, each sending the next request when the previous one ends; an open-loop variant with a fixed arrival rate is discussed in the benchmark chapter. Distributed actors, reactive streams (Project Reactor), retry policy, adaptive concurrency limits, cache-level effects, multi-node runs, production traces, and a survey of HTTP or JDBC clients are out of scope. Pinning of a virtual thread inside \texttt{synchronized} or native code is also out of scope.
+
+\section{Structure}
+
+Chapter 2 reviews the five models and the literature on saturation, and states the gap. The following chapter treats limits, cancellation, and overload. The benchmark chapter fixes the shared request, the stub, the scenarios, and the metrics, and states the threats to validity. The last chapter gives the comparison table and the recommendations.
+
+\vspace{0.5em}\noindent\rule{\textwidth}{0.5pt}\vspace{0.5em}
+
